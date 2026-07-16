@@ -4,11 +4,15 @@ import { bm25Search } from "@/lib/rag/bm25";
 import { sql } from "@/lib/rag/db";
 import { embed, toVectorLiteral } from "@/lib/rag/embeddings";
 
+export type RetrievalMethod = "semantic" | "keyword";
+
 export interface RetrievedChunk {
   chunkId: string;
   docId: string;
   text: string;
   score: number;
+  /** Which retrieval method(s) surfaced this chunk — the actual data-lineage trail per source. */
+  foundVia: RetrievalMethod[];
 }
 
 interface Row {
@@ -60,19 +64,28 @@ export async function hybridRetrieve(
 
   const byId = new Map<string, Row>(allChunks.map((c) => [c.chunk_id, c]));
   const fused = new Map<string, number>();
+  const foundVia = new Map<string, Set<RetrievalMethod>>();
 
-  semanticRows.forEach((row, rank) => {
-    fused.set(row.chunk_id, (fused.get(row.chunk_id) ?? 0) + 1 / (RRF_K + rank + 1));
-  });
-  bm25Results.forEach((r, rank) => {
-    fused.set(r.id, (fused.get(r.id) ?? 0) + 1 / (RRF_K + rank + 1));
-  });
+  const track = (chunkId: string, method: RetrievalMethod, rank: number) => {
+    fused.set(chunkId, (fused.get(chunkId) ?? 0) + 1 / (RRF_K + rank + 1));
+    if (!foundVia.has(chunkId)) foundVia.set(chunkId, new Set());
+    foundVia.get(chunkId)!.add(method);
+  };
+
+  semanticRows.forEach((row, rank) => track(row.chunk_id, "semantic", rank));
+  bm25Results.forEach((r, rank) => track(r.id, "keyword", rank));
 
   return [...fused.entries()]
     .sort((a, b) => b[1] - a[1])
     .slice(0, topK)
     .map(([chunkId, score]) => {
       const row = byId.get(chunkId)!;
-      return { chunkId, docId: row.doc_id, text: row.text, score };
+      return {
+        chunkId,
+        docId: row.doc_id,
+        text: row.text,
+        score,
+        foundVia: [...(foundVia.get(chunkId) ?? [])],
+      };
     });
 }

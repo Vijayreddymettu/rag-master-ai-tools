@@ -16,7 +16,7 @@ import { AnswerViewer } from "@/components/demo/answer-viewer";
 import { KeyGate } from "@/components/demo/key-gate";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   clearDemoSession,
@@ -31,7 +31,7 @@ interface AskResponse {
   ok: boolean;
   status: number;
   latencyMs: number;
-  data?: { answer: string; sources: { chunkId: string; docId: string; text: string; score: number }[] };
+  data?: { answer: string; sources: { chunkId: string; docId: string; text: string; score: number; foundVia: string[] }[] };
   error?: string;
 }
 
@@ -199,6 +199,10 @@ export function DemoDashboard() {
           <Card className="shadow-sm">
             <CardHeader>
               <CardTitle className="text-sm">Your data</CardTitle>
+              <CardDescription>
+                This is the only source of information the demo has — no external knowledge base,
+                no pre-loaded dataset. Answers below are traceable back to exactly what you paste here.
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               <textarea
