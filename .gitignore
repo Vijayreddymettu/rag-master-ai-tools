@@ -43,3 +43,7 @@ next-env.d.ts
 
 .vercel
 .env*
+
+# Local-only build journal — explicitly not for GitHub, kept on disk beside
+# the project only. Never remove this line without checking why it's here.
+BUILD_GUIDE.md
