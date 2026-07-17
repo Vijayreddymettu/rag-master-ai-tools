@@ -1,21 +1,24 @@
 import { NextResponse } from "next/server";
 
 import { authenticateDemoRequest } from "@/lib/demo-auth";
-import { rateLimit } from "@/lib/demo-rate-limit";
+import { checkAndIncrementAskCount } from "@/lib/rag/ask-limit";
 import { AskError, ask } from "@/lib/rag/ask";
 
-const CALLS_PER_WINDOW = 3;
-// Longer than a demo key's own 2-hour TTL (see demo-session.ts), so this acts
-// as a hard "3 tries per key" cap rather than "3 per hour, indefinitely" — by
-// the time the window would reset, the key itself has already expired and a
-// fresh one (from Reset Session) starts a new bucket anyway.
-const WINDOW_MS = 3 * 60 * 60 * 1000; // 3 hours
+const CALLS_PER_KEY = 3;
 
 /**
  * The demo's "Run API" action: customer's demo key authorizes the call, the
  * server's own OPENAI_API_KEY (via lib/rag/openai-client.ts) does the actual
  * embedding + generation work. The customer never sees that key, and it
  * never appears in this response.
+ *
+ * The 3-tries cap is enforced in Postgres (ask-limit.ts), not in-memory —
+ * Vercel runs multiple concurrent serverless instances with separate memory,
+ * so an in-process counter can't actually hold a hard cap across them. Found
+ * this the hard way: an in-memory version passed every local test (single
+ * process there) but let a live production test blow past 3 tries, because
+ * consecutive requests landed on different instances that each thought they
+ * were the first ask.
  */
 export async function POST(request: Request) {
   const startedAt = Date.now();
@@ -24,14 +27,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, status: auth.status, latencyMs: Date.now() - startedAt, error: auth.error }, { status: auth.status });
   }
 
-  const limit = rateLimit(`ask:${auth.sessionId}`, CALLS_PER_WINDOW, WINDOW_MS);
+  const limit = await checkAndIncrementAskCount(auth.sessionId, CALLS_PER_KEY);
   if (!limit.ok) {
     return NextResponse.json(
       {
         ok: false,
         status: 429,
         latencyMs: Date.now() - startedAt,
-        error: `You've used all ${CALLS_PER_WINDOW} tries for this demo key. Reset your session to get a new key and ${CALLS_PER_WINDOW} more.`,
+        error: `You've used all ${CALLS_PER_KEY} tries for this demo key. Reset your session to get a new key and ${CALLS_PER_KEY} more.`,
         triesRemaining: 0,
       },
       { status: 429 },

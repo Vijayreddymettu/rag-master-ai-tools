@@ -42,6 +42,18 @@ export function ensureSchema(): Promise<void> {
       CREATE INDEX IF NOT EXISTS demo_chunks_embedding_idx
       ON demo_chunks USING ivfflat (embedding vector_cosine_ops)
     `;
+    // A per-key counter that has to live in the database, not in-memory: Vercel
+    // runs multiple concurrent instances, each with its own separate memory, so
+    // an in-process counter can't enforce a hard cap — two requests landing on
+    // two different instances would each think they're the first ask. Postgres
+    // is the one thing every instance actually shares.
+    await sql`
+      CREATE TABLE IF NOT EXISTS demo_ask_counts (
+        session_id TEXT PRIMARY KEY,
+        count INTEGER NOT NULL DEFAULT 0,
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      )
+    `;
   })();
   return schemaReady;
 }
