@@ -4,8 +4,12 @@ import { authenticateDemoRequest } from "@/lib/demo-auth";
 import { rateLimit } from "@/lib/demo-rate-limit";
 import { AskError, ask } from "@/lib/rag/ask";
 
-const CALLS_PER_WINDOW = 20;
-const WINDOW_MS = 60 * 60 * 1000; // 1 hour
+const CALLS_PER_WINDOW = 3;
+// Longer than a demo key's own 2-hour TTL (see demo-session.ts), so this acts
+// as a hard "3 tries per key" cap rather than "3 per hour, indefinitely" — by
+// the time the window would reset, the key itself has already expired and a
+// fresh one (from Reset Session) starts a new bucket anyway.
+const WINDOW_MS = 3 * 60 * 60 * 1000; // 3 hours
 
 /**
  * The demo's "Run API" action: customer's demo key authorizes the call, the
@@ -23,7 +27,13 @@ export async function POST(request: Request) {
   const limit = rateLimit(`ask:${auth.sessionId}`, CALLS_PER_WINDOW, WINDOW_MS);
   if (!limit.ok) {
     return NextResponse.json(
-      { ok: false, status: 429, latencyMs: Date.now() - startedAt, error: `Demo rate limit reached (${CALLS_PER_WINDOW}/hr). Resets ${new Date(limit.resetAt).toLocaleTimeString()}.` },
+      {
+        ok: false,
+        status: 429,
+        latencyMs: Date.now() - startedAt,
+        error: `You've used all ${CALLS_PER_WINDOW} tries for this demo key. Reset your session to get a new key and ${CALLS_PER_WINDOW} more.`,
+        triesRemaining: 0,
+      },
       { status: 429 },
     );
   }
@@ -38,8 +48,8 @@ export async function POST(request: Request) {
   try {
     const result = await ask(auth.sessionId, body.question ?? "");
     const latencyMs = Date.now() - startedAt;
-    console.log(`[demo] ask session=${auth.sessionId} status=200 latencyMs=${latencyMs}`);
-    return NextResponse.json({ ok: true, status: 200, latencyMs, data: result });
+    console.log(`[demo] ask session=${auth.sessionId} status=200 latencyMs=${latencyMs} triesLeft=${limit.remaining}`);
+    return NextResponse.json({ ok: true, status: 200, latencyMs, data: result, triesRemaining: limit.remaining });
   } catch (err) {
     const latencyMs = Date.now() - startedAt;
     const status = err instanceof AskError ? err.status : 500;

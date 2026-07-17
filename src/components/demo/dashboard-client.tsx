@@ -27,12 +27,15 @@ import {
   writeDemoSession,
 } from "@/lib/demo-session-store";
 
+const ASK_TRIES_LIMIT = 3; // keep in sync with CALLS_PER_WINDOW in src/app/api/demo/ask/route.ts
+
 interface AskResponse {
   ok: boolean;
   status: number;
   latencyMs: number;
   data?: { answer: string; sources: { chunkId: string; docId: string; text: string; score: number; foundVia: string[] }[] };
   error?: string;
+  triesRemaining?: number;
 }
 
 interface LogEntry {
@@ -69,6 +72,7 @@ export function DemoDashboard() {
   const [question, setQuestion] = useState("");
   const [asking, setAsking] = useState(false);
   const [askResult, setAskResult] = useState<AskResponse | null>(null);
+  const [triesRemaining, setTriesRemaining] = useState<number | null>(null);
 
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [showLogs, setShowLogs] = useState(false);
@@ -113,6 +117,7 @@ export function DemoDashboard() {
     setTotalChunks(0);
     setQuestion("");
     setAskResult(null);
+    setTriesRemaining(null);
     setLogs([]);
     setShowLogs(false);
   }
@@ -151,6 +156,7 @@ export function DemoDashboard() {
     try {
       const data = await callDemoApi<AskResponse>("/api/demo/ask", session.key, { question });
       setAskResult(data);
+      if (typeof data.triesRemaining === "number") setTriesRemaining(data.triesRemaining);
       setLogs((prev) => [
         { id: crypto.randomUUID(), action: "ask" as const, summary: question, status: data.status, latencyMs: data.latencyMs, at: Date.now() },
         ...prev,
@@ -243,6 +249,10 @@ export function DemoDashboard() {
           <Card className="shadow-sm">
             <CardHeader>
               <CardTitle className="text-sm">Ask a question</CardTitle>
+              <CardDescription>
+                {`Each demo key gets ${ASK_TRIES_LIMIT} tries at this — it's what actually calls the API.`}
+                {triesRemaining !== null && ` ${triesRemaining} of ${ASK_TRIES_LIMIT} left.`}
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <form
@@ -259,12 +269,17 @@ export function DemoDashboard() {
                   aria-label="Question"
                   className="h-10"
                 />
-                <Button type="submit" disabled={!question.trim() || asking || totalChunks === 0}>
+                <Button type="submit" disabled={!question.trim() || asking || totalChunks === 0 || triesRemaining === 0}>
                   {asking ? "Running…" : "Run API"}
                 </Button>
               </form>
               {totalChunks === 0 && (
                 <p className="mt-2 text-xs text-muted-foreground">Index some data above first.</p>
+              )}
+              {triesRemaining === 0 && (
+                <p className="mt-2 text-xs text-destructive">
+                  Out of tries for this demo key — Reset Session for a new key and {ASK_TRIES_LIMIT} more.
+                </p>
               )}
             </CardContent>
           </Card>
@@ -338,9 +353,14 @@ export function DemoDashboard() {
                 variant="outline"
                 className="justify-start"
                 onClick={runAsk}
-                disabled={!question.trim() || asking || totalChunks === 0}
+                disabled={!question.trim() || asking || totalChunks === 0 || triesRemaining === 0}
               >
                 <Play className="size-3.5" /> Run API
+                {triesRemaining !== null && (
+                  <Badge variant="secondary" className="ml-auto">
+                    {triesRemaining}/{ASK_TRIES_LIMIT}
+                  </Badge>
+                )}
               </Button>
               <Button variant="outline" className="justify-start" onClick={() => setShowLogs((v) => !v)}>
                 <ScrollText className="size-3.5" /> View Logs
@@ -357,8 +377,9 @@ export function DemoDashboard() {
           </Card>
 
           <div className="rounded-xl border bg-muted/40 p-4 text-xs leading-relaxed text-muted-foreground">
-            Running on the shared demo key. Production access will ask you for your own API
-            key instead of this temporary one.
+            Running on the shared demo key, capped at {ASK_TRIES_LIMIT} questions per key to
+            keep it fair for everyone trying the demo. Production access will ask you for
+            your own API key instead of this temporary, limited one.
           </div>
         </aside>
       </div>

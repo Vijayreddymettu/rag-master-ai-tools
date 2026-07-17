@@ -35,7 +35,8 @@ export function KeyGate({ onKey }: { onKey: (key: string, expiresAt: number) => 
           <CardTitle className="text-lg">Get your demo key</CardTitle>
           <CardDescription>
             A temporary key scoped to this browser tab — no signup, nothing permanent. Runs
-            on our shared API key while you evaluate; production access will use your own.
+            on our shared API key while you evaluate, good for 3 questions; production
+            access will use your own.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center gap-3">
