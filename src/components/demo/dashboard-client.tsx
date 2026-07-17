@@ -26,6 +26,7 @@ import {
   subscribeDemoSession,
   writeDemoSession,
 } from "@/lib/demo-session-store";
+import { MAX_INPUT_WORDS, countWords } from "@/lib/text-limits";
 
 const ASK_TRIES_LIMIT = 3; // keep in sync with CALLS_PER_WINDOW in src/app/api/demo/ask/route.ts
 
@@ -65,6 +66,7 @@ export function DemoDashboard() {
   const session = parseDemoSession(rawSession);
 
   const [docText, setDocText] = useState("");
+  const docWordCount = countWords(docText);
   const [indexing, setIndexing] = useState(false);
   const [indexStatus, setIndexStatus] = useState<{ ok: boolean; message: string } | null>(null);
   const [totalChunks, setTotalChunks] = useState(0);
@@ -219,8 +221,11 @@ export function DemoDashboard() {
                 rows={6}
                 className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
               />
+              <p className={"text-right text-xs " + (docWordCount > MAX_INPUT_WORDS ? "text-destructive" : "text-muted-foreground")}>
+                {docWordCount.toLocaleString()} / {MAX_INPUT_WORDS.toLocaleString()} words
+              </p>
               <div className="flex flex-wrap items-center gap-2">
-                <Button onClick={runIndex} disabled={!docText.trim() || indexing}>
+                <Button onClick={runIndex} disabled={!docText.trim() || indexing || docWordCount > MAX_INPUT_WORDS}>
                   <Upload className="size-3.5" />
                   {indexing ? "Indexing…" : "Index Data"}
                 </Button>

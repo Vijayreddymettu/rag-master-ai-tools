@@ -3,8 +3,9 @@ import "server-only";
 import { buildChunks } from "@/lib/rag/chunker";
 import { ensureSchema, sql } from "@/lib/rag/db";
 import { embedBatch, toVectorLiteral } from "@/lib/rag/embeddings";
+import { MAX_INPUT_WORDS, countWords } from "@/lib/text-limits";
 
-const MAX_INPUT_CHARS = 50_000; // generous for a demo; keeps embedding cost/latency bounded
+const MAX_INPUT_CHARS = 50_000; // backstop for pathological input (e.g. one huge "word" with no spaces) — word cap below is the real limit for normal text
 
 export class IndexError extends Error {}
 
@@ -16,6 +17,10 @@ export async function indexDocument(
   if (!trimmed) throw new IndexError("Paste or upload some text first.");
   if (trimmed.length > MAX_INPUT_CHARS) {
     throw new IndexError(`That's ${trimmed.length.toLocaleString()} characters — the demo caps input at ${MAX_INPUT_CHARS.toLocaleString()}.`);
+  }
+  const wordCount = countWords(trimmed);
+  if (wordCount > MAX_INPUT_WORDS) {
+    throw new IndexError(`That's ${wordCount.toLocaleString()} words — the demo caps input at ${MAX_INPUT_WORDS.toLocaleString()}.`);
   }
 
   await ensureSchema();
