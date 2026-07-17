@@ -50,7 +50,11 @@ export default function Home() {
           no signup required.
         </p>
 
-        <div className="mt-8 flex justify-center">
+        <p className="mt-6 text-sm text-muted-foreground">
+          <strong className="font-bold underline">Each demo key is good for 3 questions.</strong>
+        </p>
+
+        <div className="mt-4 flex justify-center">
           <Link
             href="/demo"
             className="rounded-lg bg-foreground px-5 py-2.5 text-sm font-medium text-background transition-opacity hover:opacity-90"
