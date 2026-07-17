@@ -250,8 +250,10 @@ export function DemoDashboard() {
             <CardHeader>
               <CardTitle className="text-sm">Ask a question</CardTitle>
               <CardDescription>
-                {`Each demo key gets ${ASK_TRIES_LIMIT} tries at this — it's what actually calls the API.`}
-                {triesRemaining !== null && ` ${triesRemaining} of ${ASK_TRIES_LIMIT} left.`}
+                <strong className="font-bold underline">
+                  {`Each demo key gets ${ASK_TRIES_LIMIT} tries at this — it's what actually calls the API.`}
+                  {triesRemaining !== null && ` ${triesRemaining} of ${ASK_TRIES_LIMIT} left.`}
+                </strong>
               </CardDescription>
             </CardHeader>
             <CardContent>
