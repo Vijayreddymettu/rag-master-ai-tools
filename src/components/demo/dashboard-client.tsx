@@ -388,6 +388,42 @@ export function DemoDashboard() {
             keep it fair for everyone trying the demo. Production access will ask you for
             your own API key instead of this temporary, limited one.
           </div>
+
+          <Card className="border-dashed shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-sm">
+                Multi-cloud
+                <Badge variant="secondary" className="font-normal">Prototype</Badge>
+              </CardTitle>
+              <CardDescription>
+                Illustrative endpoint shapes only — nothing below is live. Real Azure and AWS
+                versions are planned as their own separate projects, not built into this
+                deployment.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3 text-xs">
+              <div>
+                <p className="font-medium text-foreground">Azure (planned)</p>
+                <p className="mt-1 break-all font-mono text-muted-foreground">
+                  POST https://&lt;app-name&gt;.azurewebsites.net/api/ask
+                </p>
+                <p className="mt-1 text-muted-foreground">
+                  Azure Functions behind API Management; Azure OpenAI Service for embeddings
+                  and generation instead of calling OpenAI directly.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium text-foreground">AWS (planned)</p>
+                <p className="mt-1 break-all font-mono text-muted-foreground">
+                  POST https://&lt;api-id&gt;.execute-api.&lt;region&gt;.amazonaws.com/ask
+                </p>
+                <p className="mt-1 text-muted-foreground">
+                  API Gateway + Lambda; Amazon Bedrock for embeddings and generation instead of
+                  calling OpenAI directly.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         </aside>
       </div>
     </div>
