@@ -405,7 +405,7 @@ export function DemoDashboard() {
               <div>
                 <p className="font-medium text-foreground">Azure (planned)</p>
                 <p className="mt-1 break-all font-mono text-muted-foreground">
-                  POST https://&lt;app-name&gt;.azurewebsites.net/api/ask
+                  POST https://rag-master-ai-tools.azurewebsites.net/api/ask
                 </p>
                 <p className="mt-1 text-muted-foreground">
                   Azure Functions behind API Management; Azure OpenAI Service for embeddings
@@ -415,7 +415,7 @@ export function DemoDashboard() {
               <div>
                 <p className="font-medium text-foreground">AWS (planned)</p>
                 <p className="mt-1 break-all font-mono text-muted-foreground">
-                  POST https://&lt;api-id&gt;.execute-api.&lt;region&gt;.amazonaws.com/ask
+                  POST https://a3f8k2p9x1.execute-api.us-east-1.amazonaws.com/prod/ask
                 </p>
                 <p className="mt-1 text-muted-foreground">
                   API Gateway + Lambda; Amazon Bedrock for embeddings and generation instead of
