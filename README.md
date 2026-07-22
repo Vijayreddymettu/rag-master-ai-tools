@@ -1,6 +1,7 @@
 # RAG Master AI Tools
 
 [![CI](https://github.com/Vijayreddymettu/rag-master-ai-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/Vijayreddymettu/rag-master-ai-tools/actions/workflows/ci.yml)
+[![License: All Rights Reserved](https://img.shields.io/badge/License-All%20Rights%20Reserved-red.svg)](LICENSE)
 
 A live, hands-on demo of a hybrid-retrieval RAG (Retrieval-Augmented Generation) pipeline:
 paste or upload your own text, index it, then ask questions against it — semantic vector
@@ -206,3 +207,10 @@ Deployed on Vercel with a hosted Neon Postgres provisioned through the Vercel Ma
 (`vercel integration add neon`, which auto-injects `DATABASE_URL`). Beyond that, the project
 needs `OPENAI_API_KEY`, `DEMO_SESSION_SECRET`, and `ACCESS_PASSPHRASE` set in the Vercel
 project's environment variables before deploying.
+
+## License
+
+[All Rights Reserved](LICENSE) © Vijay Mettu
+
+In plain English: this code is public so you can read it and see how it's built, but you don't
+have permission to copy, modify, deploy, or sell it — for that, ask first.
