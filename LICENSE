@@ -2,14 +2,31 @@ All Rights Reserved
 
 Copyright (c) 2026 Vijay Mettu
 
-This source code is made publicly viewable for portfolio and demonstration purposes only.
+This repository is published for public viewing only, so that others can read
+the source and see how it is built. No license is granted.
 
-No permission is granted to copy, modify, merge, publish, distribute, sublicense, deploy, host,
-or sell copies of this software, in whole or in part, for any purpose, without express written
-permission from the copyright holder.
+In plain English: this code is public so you can read it and see how it's built,
+but you don't have permission to copy, modify, deploy, or sell it — for that,
+ask first.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
-BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM,
-DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+You MAY:
+  - View and read the source in this repository.
+  - Reference it when evaluating the author's skills and experience.
+
+You MAY NOT, without the prior written permission of the copyright holder:
+  - Copy, reproduce, or redistribute any part of this repository.
+  - Modify, adapt, or create derivative works from it.
+  - Deploy, host, or use it (in whole or in part) in any product or service,
+    commercial or non-commercial.
+  - Sell, sublicense, or otherwise commercialize it.
+
+To request permission, contact the copyright holder via GitHub
+(https://github.com/Vijayreddymettu).
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHOR OR COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM,
+OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

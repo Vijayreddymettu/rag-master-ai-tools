@@ -210,7 +210,15 @@ project's environment variables before deploying.
 
 ## License
 
-[All Rights Reserved](LICENSE) © Vijay Mettu
+**All Rights Reserved — Copyright (c) 2026 Vijay Mettu.** No license is granted.
 
 In plain English: this code is public so you can read it and see how it's built, but you don't
 have permission to copy, modify, deploy, or sell it — for that, ask first.
+
+- **You may:** view and read the source, and reference it when evaluating the author's skills
+  and experience.
+- **You may not**, without prior written permission: copy, redistribute, modify, create
+  derivative works, deploy or host it (in whole or in part), or commercialise it.
+
+To request permission, contact the copyright holder via GitHub
+([@Vijayreddymettu](https://github.com/Vijayreddymettu)). Full terms in [`LICENSE`](LICENSE).
